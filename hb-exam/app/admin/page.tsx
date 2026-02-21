@@ -8,7 +8,7 @@ import {
     Users, HelpCircle, Settings, Search, Plus, Trash2,
     RotateCcw, School, Building2, ChevronRight, Loader2, LogOut,
     FileSpreadsheet, BookOpen, Layers, CheckCircle2,
-    PencilLine, X, ChevronLeft, ChevronDown, Filter
+    PencilLine, X, ChevronLeft, ChevronDown, Filter, Lock
 } from 'lucide-react'
 import { toast } from 'sonner'
 import * as XLSX from 'xlsx'
@@ -26,7 +26,8 @@ import {
     resetExam,
     updateQuestion,
     createSet,
-    deleteSet
+    deleteSet,
+    changeAdminPassword
 } from '../actions'
 import { signOut } from 'next-auth/react'
 
@@ -65,7 +66,7 @@ function getQuestionsForSection(questions: any[], setName: string, sectionName: 
 
 // ═══════════════════════════════════════════════════════════════════════════════
 export default function AdminDashboard() {
-    const [activeTab, setActiveTab] = useState<'users' | 'questions' | 'config' | 'master'>('users')
+    const [activeTab, setActiveTab] = useState<'users' | 'questions' | 'config' | 'master' | 'security'>('users')
     const [loading, setLoading] = useState(true)
     const [data, setData] = useState<any>({ users: [], questions: [], sets: [], config: {}, colleges: [], departments: [] })
     const [searchTerm, setSearchTerm] = useState('')
@@ -91,6 +92,7 @@ export default function AdminDashboard() {
     // ── Other State ──────────────────────────────────────────────────────────
     const [newCollege, setNewCollege] = useState('')
     const [newDepartment, setNewDepartment] = useState({ name: '', collegeId: '' })
+    const [newAdminPassword, setNewAdminPassword] = useState('') // New admin password
     const router = useRouter()
 
     // ── Export State ─────────────────────────────────────────────────────────
@@ -102,6 +104,7 @@ export default function AdminDashboard() {
         { id: 'questions', label: 'Questions', icon: HelpCircle },
         { id: 'config', label: 'Exam Config', icon: Settings },
         { id: 'master', label: 'Master Data', icon: School },
+        { id: 'security', label: 'Security', icon: Lock },
     ]
 
     useEffect(() => { loadData() }, [])
@@ -412,6 +415,20 @@ export default function AdminDashboard() {
     }
 
     const handleLogout = async () => { await signOut({ callbackUrl: '/' }) }
+
+    const handleChangeAdminPassword = async () => {
+        if (!newAdminPassword || newAdminPassword.length < 6) {
+            toast.error('Password must be at least 6 characters')
+            return
+        }
+        try {
+            await changeAdminPassword(newAdminPassword)
+            toast.success('Admin password updated successfully')
+            setNewAdminPassword('')
+        } catch (error: any) {
+            toast.error(error.message || 'Failed to change password')
+        }
+    }
 
     // ── Derived Data ─────────────────────────────────────────────────────────
     const allSets = getSetsFromQuestions(data.questions || [])
@@ -1005,6 +1022,34 @@ export default function AdminDashboard() {
                                         </div>
                                         <div className="pt-4 border-t border-gray-100">
                                             <Button onClick={handleUpdateConfig} className="bg-slate-800 hover:bg-slate-900">Save Configuration</Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ════════════════════════════════════════════════════
+                            SECURITY TAB
+                        ════════════════════════════════════════════════════ */}
+                        {activeTab === 'security' && (
+                            <div className="max-w-lg">
+                                <div className="p-6 border border-gray-200 rounded-lg bg-white">
+                                    <h3 className="text-base font-semibold text-slate-900 mb-6 flex items-center gap-2">Admin Credentials</h3>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-2">Change Admin Password</label>
+                                            <Input
+                                                type="password"
+                                                placeholder="New password (min. 6 characters)"
+                                                value={newAdminPassword}
+                                                onChange={(e) => setNewAdminPassword(e.target.value)}
+                                                className="max-w-[300px]"
+                                            />
+                                        </div>
+                                        <div className="pt-2">
+                                            <Button onClick={handleChangeAdminPassword} className="bg-slate-800 hover:bg-slate-900">
+                                                Update Password
+                                            </Button>
                                         </div>
                                     </div>
                                 </div>

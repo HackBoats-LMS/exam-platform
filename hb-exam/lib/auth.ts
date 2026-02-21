@@ -4,6 +4,7 @@ import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import dbConnect from '@/lib/mongodb'
 import User from '@/models/User'
+import bcrypt from 'bcryptjs'
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -20,21 +21,37 @@ export const authOptions: NextAuthOptions = {
             async authorize(credentials) {
                 if (!credentials?.email || !credentials?.password) return null
 
-                // Admin check via env vars
-                const adminEmail = process.env.ADMIN_EMAIL
-                const adminPassword = process.env.ADMIN_PASSWORD
+                await dbConnect()
 
-                if (adminEmail && adminPassword &&
-                    credentials.email === adminEmail &&
-                    credentials.password === adminPassword) {
+                // Check for admin user in DB
+                let adminUser = await User.findOne({ email: credentials.email, role: 'admin' })
 
-                    return {
-                        id: 'admin-id',
-                        email: adminEmail,
-                        name: 'Administrator',
+                // --- Initial Seeding ---
+                // If there's literally no admin user yet but the user attempts to sign in
+                // using the legacy ENV variables, we'll hash it and create their permanent DB account
+                if (!adminUser && credentials.email === process.env.ADMIN_EMAIL) {
+                    const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || '', 10)
+                    adminUser = await User.create({
+                        email: credentials.email,
+                        password: hashedPassword,
+                        fullName: 'Administrator',
                         role: 'admin'
+                    })
+                }
+
+                // If admin exists, verify their hashed DB password
+                if (adminUser && adminUser.password) {
+                    const isValid = await bcrypt.compare(credentials.password, adminUser.password)
+                    if (isValid) {
+                        return {
+                            id: adminUser._id.toString(),
+                            email: adminUser.email,
+                            name: adminUser.fullName || 'Administrator',
+                            role: 'admin'
+                        }
                     }
                 }
+
                 return null
             }
         })
