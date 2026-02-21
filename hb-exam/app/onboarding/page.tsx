@@ -28,6 +28,13 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
+/**
+ * Render the onboarding flow used to collect and persist a user's academic profile, present a mission briefing, and initiate the assessment.
+ *
+ * The component loads colleges and departments for selection, pre-fills the authenticated user's email, redirects unauthenticated users (or users with completed/terminated attempts) away, keeps WhatsApp synced with the mobile field when requested, submits profile data to be upserted, and launches the quiz in fullscreen when the user starts the exam.
+ *
+ * @returns A React element representing the onboarding page and its multi-step flow.
+ */
 export default function OnboardingPage() {
     const [step, setStep] = useState(1) // 1: Form, 2: Instructions
     const [isLoading, setIsLoading] = useState(false)
