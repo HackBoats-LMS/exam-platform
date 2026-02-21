@@ -58,7 +58,6 @@ export default function OnboardingPage() {
                     return
                 }
                 setValue('email', session.user.email || '')
-                setValue('fullName', session.user.name || '')
                 try {
                     const [cData, dData] = await Promise.all([getColleges(), getDepartments()])
                     if (cData) setColleges(cData)
@@ -351,7 +350,7 @@ export default function OnboardingPage() {
                                             <label className="ob-label">Full Legal Name</label>
                                             <div className="ob-input-wrapper">
                                                 <UserCircle2 className="ob-input-icon" size={20} />
-                                                <Input {...register('fullName')} className="ob-input" placeholder="Rahul Sharma" />
+                                                <Input {...register('fullName')} className="ob-input" placeholder="Rahul Sharma" autoComplete="off" />
                                             </div>
                                             {errors.fullName && <p className="ob-error">{errors.fullName.message}</p>}
                                         </div>

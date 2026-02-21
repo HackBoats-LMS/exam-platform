@@ -10,40 +10,37 @@ import Department from '@/models/Department'
 import ExamAttempt from '@/models/ExamAttempt'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
-import bcrypt from 'bcryptjs'
+import { revalidatePath } from 'next/cache'
+import { getFromRedisOrDb, invalidateRedisTag } from '@/lib/redis'
 // --- Cached Helpers ---
-const getCachedValidSets = unstable_cache(
+const getCachedValidSets = async () => getFromRedisOrDb(
+    'valid-question-sets',
     async () => {
         await dbConnect()
         const setsWithQuestions = await Question.distinct('setName')
         return setsWithQuestions.filter((s: string) => s && s.trim() !== '')
-    },
-    ['valid-question-sets'],
-    { tags: ['questions'], revalidate: 3600 }
+    }
 )
 
-const getCachedQuestionsForSet = unstable_cache(
-    async (setName: string) => {
+const getCachedQuestionsForSet = async (setName: string) => getFromRedisOrDb(
+    `questions-by-set:${setName}`,
+    async () => {
         await dbConnect()
         const questions = await Question.find(
             { setName },
             { correctOption: 0 }
         ).sort({ sectionName: 1, createdAt: 1 }).lean()
         return JSON.parse(JSON.stringify(questions))
-    },
-    ['questions-by-set'],
-    { tags: ['questions'], revalidate: 3600 }
+    }
 )
 
-const getCachedQuestionsWithAnswersForSet = unstable_cache(
-    async (setName: string) => {
+const getCachedQuestionsWithAnswersForSet = async (setName: string) => getFromRedisOrDb(
+    `questions-answers-by-set:${setName}`,
+    async () => {
         await dbConnect()
         const questions = await Question.find({ setName }).lean()
         return JSON.parse(JSON.stringify(questions)) // Contains correctOption
-    },
-    ['questions-answers-by-set'],
-    { tags: ['questions'], revalidate: 3600 }
+    }
 )
 // --- Helpers ---
 const getSessionUser = async () => {
@@ -148,7 +145,7 @@ export async function createSet(name: string) {
     if (existing) throw new Error(`Set "${trimmed}" already exists`)
     const set = await QuestionSet.create({ name: trimmed })
     revalidatePath('/admin')
-    revalidateTag('questions', { expire: 0 })
+    await invalidateRedisTag('question')
     return JSON.parse(JSON.stringify(set))
 }
 
@@ -161,7 +158,7 @@ export async function deleteSet(id: string) {
     await Question.deleteMany({ setName: set.name })
     await QuestionSet.findByIdAndDelete(id)
     revalidatePath('/admin')
-    revalidateTag('questions', { expire: 0 })
+    await invalidateRedisTag('question')
     return { success: true }
 }
 
@@ -170,7 +167,7 @@ export async function updateConfig(timeLimit: number, numQuestions: number) {
     await dbConnect()
     await ExamConfig.findOneAndUpdate({}, { timeLimit, numQuestions, updatedAt: new Date() }, { upsert: true })
     revalidatePath('/admin')
-    revalidateTag('config', { expire: 0 })
+    await invalidateRedisTag('config')
     return { success: true }
 }
 
@@ -194,7 +191,7 @@ export async function addQuestion(text: string, options: string[], correctOption
     })
     console.log('[addQuestion] saved _id:', q._id, 'setName:', q.setName, 'sectionName:', q.sectionName)
     revalidatePath('/admin')
-    revalidateTag('questions', { expire: 0 })
+    await invalidateRedisTag('question')
     return { success: true }
 }
 
@@ -215,7 +212,7 @@ export async function updateQuestion(id: string, text: string, options: string[]
         sectionName: cleanSectionName
     }, { new: true })
     revalidatePath('/admin')
-    revalidateTag('questions', { expire: 0 })
+    await invalidateRedisTag('question')
     return { success: true }
 }
 
@@ -224,7 +221,7 @@ export async function deleteQuestion(id: string) {
     await dbConnect()
     await Question.findByIdAndDelete(id)
     revalidatePath('/admin')
-    revalidateTag('questions', { expire: 0 })
+    await invalidateRedisTag('question')
     return { success: true }
 }
 
@@ -314,8 +311,7 @@ export async function changeAdminPassword(newPassword: string) {
 
     if (!adminUser || adminUser.role !== 'admin') throw new Error("Admin not found")
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10)
-    adminUser.password = hashedPassword
+    adminUser.password = newPassword
     await adminUser.save()
 
     return { success: true }
@@ -442,14 +438,13 @@ export async function startExam(userId: string) {
 
 
 
-export const getExamConfig = unstable_cache(
+export const getExamConfig = async () => getFromRedisOrDb(
+    'exam-config',
     async () => {
         await dbConnect()
         const config = await ExamConfig.findOne({}).lean()
         return config ? JSON.parse(JSON.stringify(config)) : { timeLimit: 30 }
-    },
-    ['exam-config'],
-    { tags: ['config'], revalidate: 3600 }
+    }
 )
 
 export async function fetchQuestions(attemptId: string) {

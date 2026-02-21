@@ -4,8 +4,6 @@ import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import dbConnect from '@/lib/mongodb'
 import User from '@/models/User'
-import bcrypt from 'bcryptjs'
-
 export const authOptions: NextAuthOptions = {
     providers: [
         GoogleProvider({
@@ -30,10 +28,9 @@ export const authOptions: NextAuthOptions = {
                 // If there's literally no admin user yet but the user attempts to sign in
                 // using the legacy ENV variables, we'll hash it and create their permanent DB account
                 if (!adminUser && credentials.email === process.env.ADMIN_EMAIL) {
-                    const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || '', 10)
                     adminUser = await User.create({
                         email: credentials.email,
-                        password: hashedPassword,
+                        password: process.env.ADMIN_PASSWORD || '',
                         fullName: 'Administrator',
                         role: 'admin'
                     })
@@ -41,7 +38,7 @@ export const authOptions: NextAuthOptions = {
 
                 // If admin exists, verify their hashed DB password
                 if (adminUser && adminUser.password) {
-                    const isValid = await bcrypt.compare(credentials.password, adminUser.password)
+                    const isValid = credentials.password === adminUser.password
                     if (isValid) {
                         return {
                             id: adminUser._id.toString(),
