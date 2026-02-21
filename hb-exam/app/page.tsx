@@ -208,7 +208,8 @@ export default function LoginPage() {
             <img
               src="https://www.hackboats.com/images/logo.png"
               alt="HackBoats"
-              style={{ height: 30, width: 'auto', filter: 'brightness(0) invert(1)', opacity: 0.85 }}
+              style={{ height: 30, width: 'auto', opacity: 0.85 }}
+              suppressHydrationWarning
             />
           </div>
 
@@ -238,7 +239,7 @@ export default function LoginPage() {
         </div>
 
         {/* Footer */}
-        <p className="sp-footer">© {new Date().getFullYear()} HackBoats Technologies</p>
+        <p className="sp-footer" suppressHydrationWarning>© {new Date().getFullYear()} HackBoats</p>
       </div>
     </>
   )
