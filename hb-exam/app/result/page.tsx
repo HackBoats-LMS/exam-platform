@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Check, X, Shield, Clock, Award, Loader2 } from 'lucide-react'
+import { CheckCircle2, Shield, Clock, LogOut, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import JSConfetti from 'js-confetti'
 import { getResult, getProfile } from '@/app/actions'
@@ -27,19 +25,19 @@ export default function ResultPage() {
         const fetchResult = async () => {
             try {
                 const userId = (session.user as any).id
-                // Fetch Profile via Action
                 const p = await getProfile(userId)
                 setProfile(p)
 
-                // Fetch Result via Action
-                const attempt = await getResult(userId) // fetches latest
+                const attempt = await getResult(userId)
 
                 if (attempt) {
                     setResult(attempt)
-                    // Check completion
                     if (attempt.totalQuestions > 0 && (attempt.score / attempt.totalQuestions) >= 0.7) {
                         const jsConfetti = new JSConfetti()
-                        jsConfetti.addConfetti()
+                        jsConfetti.addConfetti({
+                            confettiColors: ['#f97316', '#3b82f6', '#10b981', '#fcd34d'],
+                            confettiNumber: 100,
+                        })
                     }
                 } else {
                     toast.error('No exam attempt found.')
@@ -59,70 +57,201 @@ export default function ResultPage() {
         await signOut({ callbackUrl: '/' })
     }
 
-
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <Loader2 className="w-8 h-8 animate-spin text-sky-500" />
+            <div className="min-h-screen flex items-center justify-center bg-slate-50">
+                <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
             </div>
         )
     }
 
     if (!result) return null
 
-    // Helper for safe access
-    const score = result.score || 0
-    const total = result.totalQuestions || 0
-    const percentage = total > 0 ? (score / total) * 100 : 0
-    const passed = percentage >= 50
-    // Mongo uses camelCase usually based on my schema definition
-    // User profile uses schema from Mongo model: fullName, rollNo, etc.
-
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-            <Card className="max-w-md w-full p-8 text-center animate-fade-in shadow-xl">
-                <div className="mb-6 flex justify-center">
-                    <div className={`p-4 rounded-full ${passed ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
-                        <Award className="w-12 h-12" />
+        <>
+            <style>{`
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+                .rs-page {
+                    font-family: 'Inter', system-ui, sans-serif;
+                    min-height: 100dvh;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    background: #f8fafc;
+                    position: relative;
+                    overflow: hidden;
+                    -webkit-font-smoothing: antialiased;
+                    color: #0f172a;
+                }
+
+                .rs-page::before {
+                    content: ''; position: absolute; top: 50%; left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 700px; height: 700px; border-radius: 50%;
+                    background: radial-gradient(circle, rgba(249,115,22,0.06) 0%, rgba(249,115,22,0.02) 35%, transparent 70%);
+                    pointer-events: none; z-index: 0;
+                }
+                
+                .rs-page::after {
+                    content: ''; position: absolute; top: -200px; right: -200px;
+                    width: 500px; height: 500px; border-radius: 50%;
+                    background: radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 70%);
+                    pointer-events: none; z-index: 0;
+                }
+
+                .rs-grain {
+                    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+                    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+                    background-size: 140px; opacity: 0.15; mix-blend-mode: multiply;
+                }
+
+                .rs-content {
+                    position: relative; z-index: 1;
+                    display: flex; flex-direction: column; align-items: center;
+                    width: 100%; max-width: 480px; padding: 2rem;
+                    animation: rs-up 0.8s cubic-bezier(0.16,1,0.3,1) forwards;
+                }
+
+                .rs-icon-box {
+                    width: 72px; height: 72px;
+                    background: #ffffff;
+                    border: 1px solid rgba(0,0,0,0.05);
+                    color: #f97316;
+                    border-radius: 22px;
+                    display: flex; align-items: center; justify-content: center;
+                    margin-bottom: 2rem;
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+                }
+
+                .rs-heading {
+                    font-size: clamp(2rem, 5vw, 2.5rem);
+                    font-weight: 900;
+                    color: #0f172a;
+                    letter-spacing: -0.035em;
+                    line-height: 1.1;
+                    text-align: center;
+                    margin: 0 0 1rem;
+                }
+
+                .rs-subtitle {
+                    color: #64748b;
+                    font-size: 1.1rem;
+                    text-align: center;
+                    margin-bottom: 3rem;
+                    line-height: 1.5;
+                }
+                
+                .rs-subtitle strong { color: #334155; font-weight: 700; }
+
+                .rs-info-card {
+                    width: 100%;
+                    display: flex; align-items: center; gap: 1.25rem;
+                    padding: 1.5rem;
+                    border-radius: 20px;
+                    background: #ffffff;
+                    border: 1px solid rgba(0,0,0,0.06);
+                    margin-bottom: 1rem;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+                }
+                .rs-info-card:hover { 
+                    border-color: rgba(249,115,22,0.3); 
+                    background: rgba(249,115,22,0.02);
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+                }
+
+                .rs-info-icon-box {
+                    width: 48px; height: 48px; border-radius: 14px;
+                    background: #f1f5f9;
+                    display: flex; align-items: center; justify-content: center;
+                    flex-shrink: 0;
+                }
+
+                .rs-info-text h4 { font-size: 0.85rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
+                .rs-info-text p { font-size: 1.1rem; color: #334155; font-weight: 700; text-transform: capitalize; }
+
+                .rs-btn {
+                    width: 100%; height: 58px;
+                    display: flex; align-items: center; justify-content: center; gap: 10px;
+                    border-radius: 16px;
+                    background: #0f172a;
+                    color: #ffffff;
+                    font-size: 16px; font-weight: 700;
+                    border: none; cursor: pointer;
+                    margin-top: 2.5rem;
+                    box-shadow: 0 0 0 1px rgba(0,0,0,0.08), 0 4px 20px rgba(15,23,42,0.2);
+                    transition: all 0.2s ease;
+                }
+                .rs-btn:hover {
+                    transform: translateY(-2px);
+                    background: #1e293b;
+                    box-shadow: 0 0 0 1px rgba(0,0,0,0.1), 0 8px 30px rgba(15,23,42,0.3);
+                }
+                
+                .rs-footer {
+                    position: fixed; bottom: 1.5rem;
+                    font-size: 11px; color: #94a3b8;
+                    letter-spacing: 0.05em; font-weight: 600; font-family: monospace;
+                    pointer-events: none;
+                }
+
+                @keyframes rs-up {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to   { opacity: 1; transform: translateY(0);    }
+                }
+            `}</style>
+
+            <div className="rs-grain" aria-hidden />
+
+            <div className="rs-page">
+                <div className="rs-content">
+
+                    <div className="rs-icon-box">
+                        <CheckCircle2 size={36} strokeWidth={2.5} />
                     </div>
+
+                    <h1 className="rs-heading">
+                        Assessment<br />Complete<span style={{ color: '#f97316' }}>.</span>
+                    </h1>
+
+                    <p className="rs-subtitle">
+                        Your session has been securely logged.<br />
+                        Thank you for your time, <strong>{profile?.fullName || 'Student'}</strong>.
+                    </p>
+
+                    <div className="rs-info-card" style={{ animationDelay: '0.1s' }}>
+                        <div className="rs-info-icon-box" style={{ color: '#3b82f6' }}>
+                            <Shield size={24} strokeWidth={2} />
+                        </div>
+                        <div className="rs-info-text">
+                            <h4>Authentication Record</h4>
+                            <p>{profile?.rollNo || 'N/A'}</p>
+                        </div>
+                    </div>
+
+                    <div className="rs-info-card" style={{ animationDelay: '0.2s' }}>
+                        <div className="rs-info-icon-box" style={{ color: '#10b981' }}>
+                            <Clock size={24} strokeWidth={2} />
+                        </div>
+                        <div className="rs-info-text">
+                            <h4>Session Status</h4>
+                            <p>{result.status}</p>
+                        </div>
+                    </div>
+
+                    <button className="rs-btn" onClick={handleLogout}>
+                        <LogOut size={20} strokeWidth={2.5} /> Confirm & Sign Out
+                    </button>
+
                 </div>
 
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">Exam Completed!</h1>
-                <p className="text-gray-500 mb-6">
-                    Thank you for attempting the exam, <span className="font-medium text-gray-900">{profile?.fullName}</span>.
-                </p>
-
-                <div className="bg-gray-50 rounded-lg p-6 mb-8 border border-gray-100">
-                    <div className="text-sm text-gray-500 uppercase tracking-wider mb-1">Your Score</div>
-                    <div className="text-5xl font-extrabold text-gray-900 mb-2">
-                        {score} <span className="text-2xl text-gray-400">/ {total}</span>
-                    </div>
-                    <div className={`text-sm font-medium ${passed ? 'text-green-600' : 'text-red-600'}`}>
-                        {percentage.toFixed(0)}% - {passed ? 'Passed' : 'Failed'}
-                    </div>
+                <div className="rs-footer">
+                    EXAM_REF: {result._id}
                 </div>
-
-                <div className="grid grid-cols-2 gap-4 text-left text-sm text-gray-600 mb-8">
-                    <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-gray-400" />
-                        <span>Status: <span className="capitalize font-medium text-gray-900">{result.status}</span></span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Shield className="w-4 h-4 text-gray-400" />
-                        <span>Roll No: {profile?.rollNo}</span>
-                    </div>
-                </div>
-
-                <Button onClick={handleLogout} variant="outline" className="w-full">
-                    Sign Out
-                </Button>
-            </Card>
-
-            {/* Footer */}
-            <div className="absolute bottom-4 text-center text-xs text-gray-300 pointer-events-none">
-                Exam ID: {result._id}
             </div>
-        </div>
+        </>
     )
 }
 
