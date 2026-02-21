@@ -1,0 +1,7 @@
+﻿app/actions.ts(151,5): error TS2554: Expected 2 arguments, but got 1.
+app/actions.ts(164,5): error TS2554: Expected 2 arguments, but got 1.
+app/actions.ts(173,5): error TS2554: Expected 2 arguments, but got 1.
+app/actions.ts(197,5): error TS2554: Expected 2 arguments, but got 1.
+app/actions.ts(218,5): error TS2554: Expected 2 arguments, but got 1.
+app/actions.ts(227,5): error TS2554: Expected 2 arguments, but got 1.
+app/actions.ts(461,20): error TS2339: Property 'correctOption' does not exist on type '{}'.

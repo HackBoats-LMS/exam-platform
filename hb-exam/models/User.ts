@@ -4,6 +4,7 @@ const UserSchema = new mongoose.Schema({
     supabaseId: { type: String, unique: true, sparse: true }, // Legacy Supabase ID
     googleId: { type: String, unique: true, sparse: true }, // NextAuth Google ID
     email: { type: String, required: true, unique: true },
+    password: { type: String }, // Used for admin credentials
     fullName: { type: String },
     role: { type: String, enum: ['student', 'admin'], default: 'student' },
     college: String,
