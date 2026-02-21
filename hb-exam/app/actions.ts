@@ -148,8 +148,7 @@ export async function createSet(name: string) {
     if (existing) throw new Error(`Set "${trimmed}" already exists`)
     const set = await QuestionSet.create({ name: trimmed })
     revalidatePath('/admin')
-    // @ts-ignore
-    revalidateTag('questions')
+    revalidateTag('questions', { expire: 0 })
     return JSON.parse(JSON.stringify(set))
 }
 
@@ -162,8 +161,7 @@ export async function deleteSet(id: string) {
     await Question.deleteMany({ setName: set.name })
     await QuestionSet.findByIdAndDelete(id)
     revalidatePath('/admin')
-    // @ts-ignore
-    revalidateTag('questions')
+    revalidateTag('questions', { expire: 0 })
     return { success: true }
 }
 
@@ -172,8 +170,7 @@ export async function updateConfig(timeLimit: number, numQuestions: number) {
     await dbConnect()
     await ExamConfig.findOneAndUpdate({}, { timeLimit, numQuestions, updatedAt: new Date() }, { upsert: true })
     revalidatePath('/admin')
-    // @ts-ignore
-    revalidateTag('config')
+    revalidateTag('config', { expire: 0 })
     return { success: true }
 }
 
@@ -197,8 +194,7 @@ export async function addQuestion(text: string, options: string[], correctOption
     })
     console.log('[addQuestion] saved _id:', q._id, 'setName:', q.setName, 'sectionName:', q.sectionName)
     revalidatePath('/admin')
-    // @ts-ignore
-    revalidateTag('questions')
+    revalidateTag('questions', { expire: 0 })
     return { success: true }
 }
 
@@ -219,8 +215,7 @@ export async function updateQuestion(id: string, text: string, options: string[]
         sectionName: cleanSectionName
     }, { new: true })
     revalidatePath('/admin')
-    // @ts-ignore
-    revalidateTag('questions')
+    revalidateTag('questions', { expire: 0 })
     return { success: true }
 }
 
@@ -229,8 +224,7 @@ export async function deleteQuestion(id: string) {
     await dbConnect()
     await Question.findByIdAndDelete(id)
     revalidatePath('/admin')
-    // @ts-ignore
-    revalidateTag('questions')
+    revalidateTag('questions', { expire: 0 })
     return { success: true }
 }
 
@@ -476,7 +470,9 @@ export async function submitExam(attemptId: string, answers: Record<string, numb
     // Calculate score by retrieving correct answers from cache rather than DB queries per user
     let score = 0
     const questions = await getCachedQuestionsWithAnswersForSet(attempt.assignedSet)
-    const questionMap = new Map<string, any>(questions.map((q: any) => [q._id.toString(), q]))
+    const questionMap = new Map<string, { correctOption: number, [key: string]: any }>(
+        questions.map((q: any) => [q._id.toString(), q])
+    )
 
     // Evaluate answers
     for (const [qId, selectedOpt] of Object.entries(answers)) {
