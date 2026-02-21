@@ -51,13 +51,29 @@ export async function getFromRedisOrDb<T>(
 export async function invalidateRedisTag(pattern: string) {
     if (!redis) return
     try {
-        const stream = redis.scanStream({ match: `*${pattern}*`, count: 100 })
-        stream.on('data', async (keys: string[]) => {
-            if (keys.length) {
-                const pipeline = redis.pipeline()
-                keys.forEach(key => pipeline.del(key))
-                await pipeline.exec()
-            }
+        await new Promise<void>((resolve, reject) => {
+            const stream = redis.scanStream({ match: `*${pattern}*`, count: 100 })
+
+            stream.on('data', async (keys: string[]) => {
+                if (keys.length) {
+                    stream.pause()
+                    try {
+                        const pipeline = redis.pipeline()
+                        keys.forEach(key => pipeline.del(key))
+                        const results = await pipeline.exec()
+                        const pipelineErr = results?.find(([err]) => err)?.[0]
+                        if (pipelineErr) throw pipelineErr
+                    } catch (err) {
+                        stream.destroy(err as Error)
+                        reject(err)
+                    } finally {
+                        if (!stream.destroyed) stream.resume()
+                    }
+                }
+            })
+
+            stream.on('end', () => resolve())
+            stream.on('error', (err) => reject(err))
         })
     } catch (error) {
         console.error(`[Redis] Failed to invalidate pattern "${pattern}":`, error)
