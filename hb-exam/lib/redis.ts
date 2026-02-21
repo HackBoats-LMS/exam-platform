@@ -60,10 +60,14 @@ export async function invalidateRedisTag(pattern: string) {
                     try {
                         const pipeline = redis.pipeline()
                         keys.forEach(key => pipeline.del(key))
-                        await pipeline.exec()
-                        stream.resume()
+                        const results = await pipeline.exec()
+                        const pipelineErr = results?.find(([err]) => err)?.[0]
+                        if (pipelineErr) throw pipelineErr
                     } catch (err) {
+                        stream.destroy(err as Error)
                         reject(err)
+                    } finally {
+                        if (!stream.destroyed) stream.resume()
                     }
                 }
             })
