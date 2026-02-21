@@ -8,7 +8,7 @@ import {
     Users, HelpCircle, Settings, Search, Plus, Trash2,
     RotateCcw, School, Building2, ChevronRight, Loader2, LogOut,
     FileSpreadsheet, BookOpen, Layers, CheckCircle2,
-    PencilLine, X, ChevronLeft, ChevronDown, Filter, Lock
+    PencilLine, X, ChevronLeft, ChevronDown, Filter, Lock, Menu
 } from 'lucide-react'
 import { toast } from 'sonner'
 import * as XLSX from 'xlsx'
@@ -67,6 +67,7 @@ function getQuestionsForSection(questions: any[], setName: string, sectionName: 
 // ═══════════════════════════════════════════════════════════════════════════════
 export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState<'users' | 'questions' | 'config' | 'master' | 'security'>('users')
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [loading, setLoading] = useState(true)
     const [data, setData] = useState<any>({ users: [], questions: [], sets: [], config: {}, colleges: [], departments: [] })
     const [searchTerm, setSearchTerm] = useState('')
@@ -451,13 +452,60 @@ export default function AdminDashboard() {
 
     // ─────────────────────────────────────────────────────────────────────────
     return (
-        <div className="min-h-screen bg-white flex font-sans text-slate-800">
+        <div className="min-h-screen bg-white flex font-sans text-slate-800 w-full max-w-[100vw] overflow-x-hidden">
 
-            {/* ── Sidebar ─────────────────────────────────────────────────── */}
+            {/* ── Mobile Sidebar Overlay ──────────────────────────────────── */}
+            <AnimatePresence>
+                {mobileMenuOpen && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            className="fixed inset-0 bg-black/20 z-40 md:hidden"
+                            onClick={() => setMobileMenuOpen(false)}
+                        />
+                        <motion.div
+                            initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
+                            transition={{ type: 'spring', bounce: 0, duration: 0.3 }}
+                            className="fixed inset-y-0 left-0 w-64 bg-slate-50 border-r border-gray-200 z-50 flex flex-col md:hidden"
+                        >
+                            <div className="p-6 h-16 border-b border-gray-200 flex items-center justify-between px-6">
+                                <div className="flex items-center">
+                                    <img src="https://www.hackboats.com/images/logo.png" className="h-6 w-auto mr-3 opacity-80" alt="" />
+                                    <span className="font-semibold text-slate-700 tracking-tight">Console</span>
+                                </div>
+                                <button onClick={() => setMobileMenuOpen(false)}>
+                                    <X className="w-5 h-5 text-slate-400" />
+                                </button>
+                            </div>
+                            <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+                                {tabs.map(tab => (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => { setActiveTab(tab.id as any); setMobileMenuOpen(false) }}
+                                        className={`w-full flex items-center px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${activeTab === tab.id
+                                            ? 'bg-white text-slate-900 shadow-sm border border-gray-200'
+                                            : 'text-slate-500 hover:text-slate-900 hover:bg-gray-100'}`}
+                                    >
+                                        <tab.icon className={`w-4 h-4 mr-3 ${activeTab === tab.id ? 'text-slate-800' : 'text-slate-400'}`} />
+                                        {tab.label}
+                                    </button>
+                                ))}
+                            </nav>
+                            <div className="p-4 border-t border-gray-200">
+                                <Button variant="ghost" className="w-full justify-start text-slate-500 hover:text-red-600 hover:bg-red-50 text-sm h-9 px-2" onClick={handleLogout}>
+                                    <LogOut className="w-4 h-4 mr-3" /> Sign Out
+                                </Button>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+
+            {/* ── Desktop Sidebar ─────────────────────────────────────────── */}
             <div className="w-64 bg-slate-50 border-r border-gray-200 hidden md:flex flex-col fixed h-full z-10">
                 <div className="p-6 h-16 border-b border-gray-200 flex items-center px-6">
-                    <img src="https://www.hackboats.com/images/logo.png" className="h-6 w-auto mr-3 grayscale opacity-80" alt="" />
-                    <span className="font-semibold text-slate-700 tracking-tight">Admin Console</span>
+                    <img src="https://www.hackboats.com/images/logo.png" className="h-6 w-auto mr-3 opacity-80" alt="" />
+
                 </div>
                 <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
                     {tabs.map(tab => (
@@ -481,10 +529,13 @@ export default function AdminDashboard() {
             </div>
 
             {/* ── Main Content ─────────────────────────────────────────────── */}
-            <main className="flex-1 md:ml-64 bg-white">
+            <main className="flex-1 md:ml-64 bg-white min-w-0 flex flex-col">
                 {/* Top Bar */}
-                <div className="h-16 border-b border-gray-100 flex items-center justify-between px-8 bg-white sticky top-0 z-20">
-                    <div className="flex items-center gap-3">
+                <div className="h-16 border-b border-gray-100 flex items-center justify-between px-4 md:px-8 bg-white sticky top-0 z-20 shrink-0">
+                    <div className="flex items-center gap-2 md:gap-3 truncate">
+                        <button className="md:hidden p-2 -ml-2 text-slate-500 hover:text-slate-800 shrink-0" onClick={() => setMobileMenuOpen(true)}>
+                            <Menu className="w-5 h-5" />
+                        </button>
                         {activeTab === 'questions' && qView !== 'sets' && (
                             <button
                                 onClick={() => {
@@ -612,7 +663,7 @@ export default function AdminDashboard() {
                         <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
                     </div>
                 ) : (
-                    <div className="p-8">
+                    <div className="p-4 md:p-8">
 
                         {/* ════════════════════════════════════════════════════
                             STUDENTS TAB
@@ -620,7 +671,7 @@ export default function AdminDashboard() {
                         {activeTab === 'users' && (
                             <div className="space-y-4">
                                 {/* Search + College Filter Row */}
-                                <div className="flex gap-2">
+                                <div className="flex flex-col sm:flex-row gap-2">
                                     <div className="relative flex-1">
                                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                         <Input placeholder="Search students..." className="pl-9 h-9 text-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
@@ -629,7 +680,7 @@ export default function AdminDashboard() {
                                     <select
                                         value={exportCollege}
                                         onChange={e => setExportCollege(e.target.value)}
-                                        className="h-9 rounded-md border border-gray-200 bg-white px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-200 min-w-[160px] max-w-[220px]"
+                                        className="h-9 rounded-md border border-gray-200 bg-white px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-200 w-full sm:min-w-[160px] sm:max-w-[220px]"
                                     >
                                         <option value="">All Colleges ({(data.users || []).length})</option>
                                         {uniqueColleges.map((c: string) => {
@@ -656,8 +707,8 @@ export default function AdminDashboard() {
                                         </button>
                                     )}
                                 </div>
-                                <div className="border border-gray-200 rounded-lg overflow-hidden">
-                                    <table className="w-full text-sm">
+                                <div className="border border-gray-200 rounded-lg overflow-x-auto w-full">
+                                    <table className="w-full text-sm min-w-[800px]">
                                         <thead>
                                             <tr className="bg-slate-50 border-b border-gray-200 text-xs text-slate-500 uppercase tracking-wide">
                                                 <th className="px-6 py-3 text-left font-medium">Student</th>

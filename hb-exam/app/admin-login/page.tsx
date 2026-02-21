@@ -64,9 +64,9 @@ export default function AdminLoginPage() {
                     <p className="text-gray-500 text-sm mt-2">Enter your credentials to manage the platform</p>
                 </div>
 
-                <div className="px-6 pb-8">
-                    <form onSubmit={handleAdminLogin} className="space-y-4">
-                        <div className="space-y-2">
+                <div className="px-6 pb-8" suppressHydrationWarning>
+                    <form onSubmit={handleAdminLogin} className="space-y-4" suppressHydrationWarning>
+                        <div className="space-y-2" suppressHydrationWarning>
                             <label className="text-sm font-medium text-gray-700 ml-1">Email Address</label>
                             <div className="relative">
                                 <Mail className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
@@ -77,6 +77,7 @@ export default function AdminLoginPage() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
+                                    suppressHydrationWarning
                                 />
                             </div>
                         </div>
