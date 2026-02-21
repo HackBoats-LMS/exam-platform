@@ -824,7 +824,7 @@ export default function AdminDashboard() {
                                                         {/* Delete set button */}
                                                         <button
                                                             onClick={() => handleDeleteSet(set._id, set.name)}
-                                                            className="absolute top-3 right-8 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-red-50 text-slate-300 hover:text-red-500"
+                                                            className="absolute top-3 right-8 transition-opacity p-1 rounded hover:bg-red-50 text-slate-300 hover:text-red-500"
                                                             title="Delete set"
                                                         >
                                                             <Trash2 className="w-3.5 h-3.5" />
@@ -1208,7 +1208,7 @@ function QuestionCard({ q, qIdx, onEdit, onDelete, highlight = false }: {
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-2 mt-3 ml-7 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex gap-2 mt-3 ml-7 transition-opacity">
                     <Button variant="outline" size="sm" onClick={onEdit}
                         className="h-7 px-3 text-xs text-blue-600 border-blue-100 hover:bg-blue-50 bg-white">
                         <PencilLine className="w-3 h-3 mr-1" /> Edit
