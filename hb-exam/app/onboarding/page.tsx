@@ -123,6 +123,10 @@ export default function OnboardingPage() {
             <style>{`
                 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap');
 
+                html, body {
+                    overflow-x: hidden;
+                }
+                
                 .ob-page {
                     font-family: 'Inter', system-ui, sans-serif;
                     min-height: 100dvh;
@@ -286,6 +290,9 @@ export default function OnboardingPage() {
                     transition: all 0.3s ease;
                     box-shadow: 0 2px 8px rgba(0,0,0,0.02);
                 }
+                @media (max-width: 600px) {
+                    .ob-rule-card { padding: 1.25rem; gap: 1rem; }
+                }
                 .ob-rule-card:hover { transform: translateX(8px); border-color: #f9731644; box-shadow: 0 12px 24px rgba(0,0,0,0.04); }
                 
                 .ob-rule-icon-box {
@@ -355,14 +362,14 @@ export default function OnboardingPage() {
                                             {errors.fullName && <p className="ob-error">{errors.fullName.message}</p>}
                                         </div>
                                         <div className="ob-field">
-                                            <label className="ob-label">University Email</label>
+                                            <label className="ob-label">Email</label>
                                             <div className="ob-input-wrapper">
                                                 <Mail className="ob-input-icon" size={20} />
                                                 <Input {...register('email')} className="ob-input" readOnly />
                                             </div>
                                         </div>
                                         <div className="ob-field">
-                                            <label className="ob-label">University Roll Number</label>
+                                            <label className="ob-label">Roll Number</label>
                                             <div className="ob-input-wrapper">
                                                 <Hash className="ob-input-icon" size={20} />
                                                 <Input {...register('rollNo')} className="ob-input" placeholder="20XX1A05XX" />
@@ -471,8 +478,8 @@ export default function OnboardingPage() {
                             <div className="ob-brief-icon">
                                 <ShieldCheck size={36} strokeWidth={2.5} />
                             </div>
-                            <h2 style={{ fontSize: '3rem', fontWeight: 900, letterSpacing: '-0.05em', color: '#1d1d1f', marginBottom: '1rem' }}>The Mission Briefing</h2>
-                            <p style={{ color: '#86868b', fontSize: '1.25rem', fontWeight: 500, marginBottom: '5rem' }}>Read carefully. There is no going back once you start.</p>
+                            <h2 style={{ fontSize: 'clamp(2.2rem, 7vw, 3.5rem)', fontWeight: 900, letterSpacing: '-0.05em', color: '#1d1d1f', marginBottom: '1rem', lineHeight: '1.1' }}>The Mission Briefing</h2>
+                            <p style={{ color: '#86868b', fontSize: 'clamp(1rem, 3.5vw, 1.25rem)', fontWeight: 500, marginBottom: '4rem' }}>Read carefully. There is no going back once you start.</p>
 
                             <div className="ob-rule-card">
                                 <div className="ob-rule-icon-box" style={{ background: '#f5f5f7', color: '#1d1d1f' }}>
