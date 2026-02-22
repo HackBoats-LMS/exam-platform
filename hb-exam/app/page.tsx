@@ -214,7 +214,7 @@ export default function LoginPage() {
           </div>
 
           {/* Eyebrow */}
-          <p className="sp-eyebrow">Exam Platform</p>
+          {/* <p className="sp-eyebrow">Exam Platform</p> */}
 
           {/* Heading */}
           <h1 className="sp-heading">
