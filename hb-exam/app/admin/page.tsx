@@ -64,7 +64,13 @@ function getQuestionsForSection(questions: any[], setName: string, sectionName: 
     )
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+/**
+ * Admin console React component that provides UI and handlers for managing students, question sets/sections, exam configuration, master data (colleges/departments), and security actions.
+ *
+ * Renders the complete admin dashboard interface with tabs for Students, Questions, Exam Config, Master Data, and Security, and includes controls for data loading, export, create/update/delete operations, and authentication actions.
+ *
+ * @returns The rendered admin dashboard React element.
+ */
 export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState<'users' | 'questions' | 'config' | 'master' | 'security'>('users')
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -1168,7 +1174,16 @@ export default function AdminDashboard() {
     )
 }
 
-// ─── QuestionCard Component ────────────────────────────────────────────────────
+/**
+ * Render a card displaying a multiple-choice question with its options and Edit/Delete actions.
+ *
+ * @param q - Question object containing `questionText` (string), `options` (string[]), and `correctOption` (zero-based index of the correct option)
+ * @param qIdx - Zero-based question index used for the displayed numbering
+ * @param onEdit - Callback invoked when the Edit action is triggered
+ * @param onDelete - Callback invoked when the Delete action is triggered
+ * @param highlight - When true, apply elevated/highlighted visual styling to the card
+ * @returns The rendered question card element with option badges and action buttons
+ */
 function QuestionCard({ q, qIdx, onEdit, onDelete, highlight = false }: {
     q: any
     qIdx: number

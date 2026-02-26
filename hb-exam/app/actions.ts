@@ -135,6 +135,15 @@ export async function fetchAdminData() {
     }
 }
 
+/**
+ * Creates a new question set for exams.
+ *
+ * @param name - The desired set name; leading/trailing whitespace is trimmed and the resulting name must not be empty
+ * @returns The created question set object (plain JSON with at least `id`/`_id` and `name`)
+ * @throws Error if the caller is not an admin
+ * @throws Error if the trimmed `name` is empty
+ * @throws Error if a set with the trimmed name already exists
+ */
 export async function createSet(name: string) {
     if (!await isAdmin()) throw new Error('Unauthorized')
     await dbConnect()
@@ -149,6 +158,14 @@ export async function createSet(name: string) {
     return JSON.parse(JSON.stringify(set))
 }
 
+/**
+ * Deletes a question set and all questions that belong to it, then revalidates the admin path and invalidates question caches.
+ *
+ * @param id - The ID of the question set to delete
+ * @returns An object with `success: true` when deletion completes
+ * @throws Error - If the caller is not an admin ('Unauthorized')
+ * @throws Error - If no set exists with the given ID ('Set not found')
+ */
 export async function deleteSet(id: string) {
     if (!await isAdmin()) throw new Error('Unauthorized')
     await dbConnect()
@@ -162,6 +179,14 @@ export async function deleteSet(id: string) {
     return { success: true }
 }
 
+/**
+ * Update the exam configuration's time limit and number of questions.
+ *
+ * @param timeLimit - Exam duration in minutes
+ * @param numQuestions - Number of questions per exam
+ * @throws Error when the current user is not an administrator
+ * @returns An object with `success: true` on successful update
+ */
 export async function updateConfig(timeLimit: number, numQuestions: number) {
     if (!await isAdmin()) throw new Error("Unauthorized")
     await dbConnect()
@@ -171,6 +196,18 @@ export async function updateConfig(timeLimit: number, numQuestions: number) {
     return { success: true }
 }
 
+/**
+ * Creates a new question in the specified set and section.
+ *
+ * @param text - The question text; must be non-empty.
+ * @param options - Array of answer option strings; must contain at least four items.
+ * @param correctOption - Index of the correct option within `options`.
+ * @param setName - Target question set name; defaults to "Default Set" when empty.
+ * @param sectionName - Section name within the set; defaults to "General" when empty.
+ * @returns An object with `success: true` when the question is created.
+ * @throws Error - If the caller is not an admin.
+ * @throws Error - If `text` is empty or `options` has fewer than four items.
+ */
 export async function addQuestion(text: string, options: string[], correctOption: number, setName: string, sectionName: string) {
     if (!await isAdmin()) throw new Error("Unauthorized")
     await dbConnect()
@@ -195,6 +232,23 @@ export async function addQuestion(text: string, options: string[], correctOption
     return { success: true }
 }
 
+/**
+ * Update an existing question's text, options, correct answer, and set/section.
+ *
+ * Connects to the database, replaces the stored fields for the question with the
+ * provided values (trimming strings and normalizing empty set/section names to
+ * defaults), triggers admin page revalidation and question cache invalidation,
+ * and returns a success marker.
+ *
+ * @param id - The question's document ID
+ * @param text - The question text; leading/trailing whitespace will be trimmed
+ * @param options - Array of answer option strings; each option will be trimmed
+ * @param correctOption - The index of the correct option within `options`
+ * @param setName - The target question set name; empty or missing values become "Default Set"
+ * @param sectionName - The question's section name; empty or missing values become "General"
+ * @returns An object with `success: true` when the update completes
+ * @throws Error - Thrown with message "Unauthorized" if the current user is not an admin
+ */
 export async function updateQuestion(id: string, text: string, options: string[], correctOption: number, setName: string, sectionName: string) {
     if (!await isAdmin()) throw new Error("Unauthorized")
     await dbConnect()
@@ -216,6 +270,13 @@ export async function updateQuestion(id: string, text: string, options: string[]
     return { success: true }
 }
 
+/**
+ * Deletes a question by its ID and refreshes related caches and the admin page.
+ *
+ * @param id - ID of the question to delete
+ * @returns An object with `success: true` when deletion completes
+ * @throws Error "Unauthorized" if the caller is not an admin
+ */
 export async function deleteQuestion(id: string) {
     if (!await isAdmin()) throw new Error("Unauthorized")
     await dbConnect()
@@ -301,6 +362,15 @@ export async function resetExam(userId: string) {
     return { success: true }
 }
 
+/**
+ * Change the currently signed-in admin user's password.
+ *
+ * @param newPassword - The new password to set; must be at least 6 characters.
+ * @returns An object with `success: true` when the update completes.
+ * @throws Error("Unauthorized") if the current session user is not an admin.
+ * @throws Error("Password must be at least 6 characters") if `newPassword` is missing or shorter than 6 characters.
+ * @throws Error("Admin not found") if the session user cannot be found in the database or does not have the `admin` role.
+ */
 export async function changeAdminPassword(newPassword: string) {
     if (!await isAdmin()) throw new Error("Unauthorized")
     if (!newPassword || newPassword.length < 6) throw new Error("Password must be at least 6 characters")
@@ -447,6 +517,12 @@ export const getExamConfig = async () => getFromRedisOrDb(
     }
 )
 
+/**
+ * Retrieves the questions (excluding correct answers) for the exam attempt's assigned set.
+ *
+ * @param attemptId - The ID of the exam attempt to load the assigned question set from
+ * @returns An array of question objects for the attempt's assigned set (answers omitted); returns an empty array if the attempt is not found
+ */
 export async function fetchQuestions(attemptId: string) {
     await dbConnect()
     const attempt = await ExamAttempt.findById(attemptId).lean()
@@ -497,4 +573,3 @@ export async function getResult(userId: string) {
 
 
 // End of actions
-

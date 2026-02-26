@@ -16,6 +16,14 @@ const redis = redisUrl
     })
     : null
 
+/**
+ * Retrieve a value by key, using Redis as a cache when available and falling back to the provided fetch function.
+ *
+ * @param key - The cache key to read or write in Redis
+ * @param fetchFn - Function to fetch the value from the primary data source when the key is missing or Redis is unavailable
+ * @param ttlSeconds - Time-to-live for the cached value in seconds (default: 3600)
+ * @returns The value associated with `key`, either from Redis cache (if available) or from `fetchFn`
+ */
 export async function getFromRedisOrDb<T>(
     key: string,
     fetchFn: () => Promise<T>,
@@ -48,6 +56,14 @@ export async function getFromRedisOrDb<T>(
     return data
 }
 
+/**
+ * Delete all Redis keys that contain the provided pattern.
+ *
+ * Attempts to stream keys (SCAN) matching `*pattern*` and delete them in batches using a pipeline.
+ * If Redis is not configured the function is a no-op. Errors during invalidation are caught and logged.
+ *
+ * @param pattern - Substring to match within keys (keys matching `*pattern*` will be deleted)
+ */
 export async function invalidateRedisTag(pattern: string) {
     if (!redis) return
     try {
