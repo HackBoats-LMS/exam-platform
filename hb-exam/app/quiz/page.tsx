@@ -36,6 +36,7 @@ export default function QuizPage() {
     const router = useRouter()
     const { data: session, status } = useSession()
     const timerRef = useRef<NodeJS.Timeout>(null)
+    const wakeLockRef = useRef<any>(null)
 
     // ── Submit ───────────────────────────────────────────────────────────────
     const submitExam = useCallback(async (reason?: string) => {
@@ -80,6 +81,30 @@ export default function QuizPage() {
             document.removeEventListener('webkitfullscreenchange', onFullscreen)
         }
     }, [isSubmitting, submitExam])
+
+    // ── Screen Wake Lock ─────────────────────────────────────────────────────
+    useEffect(() => {
+        const requestWakeLock = async () => {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLockRef.current = await navigator.wakeLock.request('screen')
+                }
+            } catch (err: any) {
+                console.error('Wake Lock error:', err.message)
+            }
+        }
+
+        if (!loading && !isSubmitting) {
+            requestWakeLock()
+        }
+
+        return () => {
+            if (wakeLockRef.current) {
+                wakeLockRef.current.release().catch(console.error)
+                wakeLockRef.current = null
+            }
+        }
+    }, [loading, isSubmitting])
 
     // ── Init ─────────────────────────────────────────────────────────────────
     // ── Init ─────────────────────────────────────────────────────────────────
@@ -258,7 +283,7 @@ export default function QuizPage() {
 
     // ── Main render ───────────────────────────────────────────────────────────
     return (
-        <div className="h-screen w-screen bg-slate-100 flex flex-col overflow-hidden select-none" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="h-screen w-screen bg-slate-100 flex flex-col overflow-hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
 
             {/* ── TOP HEADER ─────────────────────────────────────────────── */}
             <header className="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-6 shrink-0 z-30 shadow-sm">
@@ -383,16 +408,17 @@ export default function QuizPage() {
                                         return (
                                             <button
                                                 key={idx}
+                                                type="button"
                                                 onClick={() => handleAnswer(idx)}
                                                 className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-center gap-4 group active:scale-[0.99] ${selected
                                                     ? 'border-blue-500 bg-blue-50 shadow-md'
                                                     : 'border-slate-200 bg-white hover:border-blue-300 hover:bg-blue-50/40'}`}
                                             >
-                                                <span className={`shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-bold transition-all ${selected ? 'border-blue-500 bg-blue-500 text-white' : 'border-slate-300 text-slate-500 group-hover:border-blue-400'}`}>
+                                                <span className={`shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-bold transition-all pointer-events-none ${selected ? 'border-blue-500 bg-blue-500 text-white' : 'border-slate-300 text-slate-500 group-hover:border-blue-400'}`}>
                                                     {String.fromCharCode(65 + idx)}
                                                 </span>
-                                                <span className={`text-sm md:text-base font-medium flex-1 ${selected ? 'text-blue-700' : 'text-slate-700'}`}>{opt}</span>
-                                                {selected && <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0" />}
+                                                <span className={`text-sm md:text-base font-medium flex-1 pointer-events-none ${selected ? 'text-blue-700' : 'text-slate-700'}`}>{opt}</span>
+                                                {selected && <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0 pointer-events-none" />}
                                             </button>
                                         )
                                     })}
