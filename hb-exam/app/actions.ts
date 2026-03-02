@@ -453,8 +453,51 @@ export async function fetchQuestions(attemptId: string) {
     if (!attempt) return []
 
     // Fetch questions securely from cache (omits answers)
-    // The DB query already sorts by sectionName (alphabetically) and createdAt (insertion order)
-    return await getCachedQuestionsForSet(attempt.assignedSet)
+    const questions = await getCachedQuestionsForSet(attempt.assignedSet)
+
+    // Deterministic shuffle using attemptId as seed
+    // Simple seeded PRNG (Mulberry32)
+    const seedString = attemptId.toString();
+    let h = 0;
+    for (let i = 0; i < seedString.length; i++) {
+        h = Math.imul(31, h) + seedString.charCodeAt(i) | 0;
+    }
+
+    let a = h;
+    const random = () => {
+        let t = a += 0x6D2B79F5;
+        t = Math.imul(t ^ t >>> 15, t | 1);
+        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+
+    // Group by section
+    const bySection: Record<string, any[]> = {};
+    for (const q of questions) {
+        const sec = q.sectionName || 'General';
+        if (!bySection[sec]) bySection[sec] = [];
+        bySection[sec].push(q);
+    }
+
+    // Shuffle sections
+    const sections = Object.keys(bySection);
+    for (let i = sections.length - 1; i > 0; i--) {
+        const j = Math.floor(random() * (i + 1));
+        [sections[i], sections[j]] = [sections[j], sections[i]];
+    }
+
+    // Shuffle questions within each section and merge
+    const shuffled: any[] = [];
+    for (const sec of sections) {
+        const secQs = bySection[sec];
+        for (let i = secQs.length - 1; i > 0; i--) {
+            const j = Math.floor(random() * (i + 1));
+            [secQs[i], secQs[j]] = [secQs[j], secQs[i]];
+        }
+        shuffled.push(...secQs);
+    }
+
+    return shuffled;
 }
 
 export async function submitExam(attemptId: string, answers: Record<string, number>, status: string) {
