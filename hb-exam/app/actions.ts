@@ -225,6 +225,26 @@ export async function deleteQuestion(id: string) {
     return { success: true }
 }
 
+export async function updateSectionName(setName: string, oldSectionName: string, newSectionName: string) {
+    if (!await isAdmin()) throw new Error("Unauthorized")
+    await dbConnect()
+
+    const cleanSetName = (setName || '').trim() || 'Default Set'
+    const cleanOldSection = (oldSectionName || '').trim()
+    const cleanNewSection = (newSectionName || '').trim()
+
+    if (!cleanOldSection || !cleanNewSection) throw new Error('Invalid section name')
+
+    await Question.updateMany(
+        { setName: cleanSetName, sectionName: cleanOldSection },
+        { $set: { sectionName: cleanNewSection } }
+    )
+
+    revalidatePath('/admin')
+    await invalidateRedisTag('question')
+    return { success: true }
+}
+
 export async function addCollege(name: string) {
     if (!await isAdmin()) throw new Error("Unauthorized")
     await dbConnect()
