@@ -25,6 +25,7 @@ import {
     deleteUser,
     resetExam,
     updateQuestion,
+    updateSectionName,
     createSet,
     deleteSet,
     changeAdminPassword
@@ -262,6 +263,19 @@ export default function AdminDashboard() {
         try {
             await deleteQuestion(id)
             toast.success('Question deleted')
+            await silentRefresh()
+        } catch (e: any) {
+            toast.error(e.message)
+        }
+    }
+
+    const handleEditSection = async (oldName: string) => {
+        const newName = prompt(`Enter new name for section "${oldName}":`, oldName)
+        if (!newName || newName.trim() === '' || newName.trim() === oldName) return
+
+        try {
+            await updateSectionName(currentSetRef.current, oldName, newName.trim())
+            toast.success('Section renamed')
             await silentRefresh()
         } catch (e: any) {
             toast.error(e.message)
@@ -881,17 +895,25 @@ export default function AdminDashboard() {
                                                 {allSections.map(sec => {
                                                     const cnt = getQuestionsForSection(data.questions || [], currentSet, sec).length
                                                     return (
-                                                        <button
-                                                            key={sec}
-                                                            onClick={() => openSection(sec)}
-                                                            className="w-full text-left px-4 py-3 border border-gray-200 rounded-lg bg-white hover:border-slate-400 hover:shadow-sm transition-all group flex items-center justify-between"
-                                                        >
-                                                            <div className="flex items-center gap-2">
-                                                                <Layers className="w-3.5 h-3.5 text-slate-400" />
-                                                                <span className="font-medium text-sm text-slate-700">{sec}</span>
-                                                            </div>
-                                                            <span className="text-xs text-slate-400">{cnt} Q</span>
-                                                        </button>
+                                                        <div key={sec} className="flex gap-2">
+                                                            <button
+                                                                onClick={() => openSection(sec)}
+                                                                className="flex-1 text-left px-4 py-3 border border-gray-200 rounded-lg bg-white hover:border-slate-400 hover:shadow-sm transition-all group flex items-center justify-between"
+                                                            >
+                                                                <div className="flex items-center gap-2">
+                                                                    <Layers className="w-3.5 h-3.5 text-slate-400" />
+                                                                    <span className="font-medium text-sm text-slate-700">{sec}</span>
+                                                                </div>
+                                                                <span className="text-xs text-slate-400">{cnt} Q</span>
+                                                            </button>
+                                                            <button
+                                                                className="flex items-center justify-center px-4 border border-gray-200 rounded-lg bg-white text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all shadow-sm"
+                                                                title="Edit Section Name"
+                                                                onClick={() => handleEditSection(sec)}
+                                                            >
+                                                                <PencilLine className="w-4 h-4" />
+                                                            </button>
+                                                        </div>
                                                     )
                                                 })}
                                             </div>
