@@ -100,6 +100,7 @@ export default function AdminDashboard() {
     // ── Export State ─────────────────────────────────────────────────────────
     const [exportCollege, setExportCollege] = useState('')   // '' = all colleges
     const [showExportMenu, setShowExportMenu] = useState(false)
+    const [topN, setTopN] = useState(10)
 
     const tabs = [
         { id: 'users', label: 'Students', icon: Users },
@@ -293,6 +294,7 @@ export default function AdminDashboard() {
         'Department': u.department || '',
         'Section': u.section || '',
         'Year': u.year || '',
+        'Semester': u.semester || '',
         'Mobile': u.mobile || '',
         'WhatsApp': u.whatsapp || '',
         'Exam Status': u.exam_attempts?.[0]?.status || 'Not Started',
@@ -382,6 +384,53 @@ export default function AdminDashboard() {
         const now = new Date().toISOString().slice(0, 10)
         XLSX.writeFile(wb, `Exam_Results_By_College_${now}.xlsx`)
         toast.success(`Downloaded ${totalStudents} students across ${colleges.length} colleges (${colleges.length + 1} sheets)`)
+    }
+
+    const handleExportTopStudents = (collegeName?: string) => {
+        if (!data.users?.length) { toast.error('No student data to export'); return }
+        setShowExportMenu(false)
+
+        const target = collegeName ?? '' // Use specific college or empty for all
+        const targetUsers = target
+            ? data.users.filter((u: any) => (u.college || '').trim() === target.trim())
+            : data.users
+
+        const completedUsers = [...targetUsers]
+            .filter((u: any) => u.exam_attempts?.[0]?.status === 'completed')
+            .sort((a: any, b: any) => (b.exam_attempts?.[0]?.score || 0) - (a.exam_attempts?.[0]?.score || 0))
+            .slice(0, topN)
+
+        if (!completedUsers.length) {
+            toast.error(target ? `No completed exam attempts found for ${target}` : 'No completed exam attempts found')
+            return
+        }
+
+        const exportData = completedUsers.map((u: any) => ({
+            'Email': u.email || '',
+            'Full Name': u.fullName || '',
+            'Phone Number': u.mobile || u.whatsapp || '',
+            'College': u.college || '',
+            'Semester': u.semester || ''
+        }))
+
+        const ws = XLSX.utils.json_to_sheet(exportData)
+
+        // Auto-fit column widths
+        const colWidths = Object.keys(exportData[0] || {}).map(key => ({
+            wch: Math.max(key.length, ...exportData.map((r: any) => String(r[key] || '').length)) + 2
+        }))
+        ws['!cols'] = colWidths
+
+        const wb = XLSX.utils.book_new()
+        const sheetName = target ? `Top ${topN} - ${target.substring(0, 15)}` : `Top ${topN} Students`
+        XLSX.utils.book_append_sheet(wb, ws, sheetName.substring(0, 31))
+        
+        const fileName = target 
+            ? `Top_${topN}_Students_${target.replace(/\s+/g, '_')}.xlsx` 
+            : `Top_${topN}_Students_All.xlsx`
+            
+        XLSX.writeFile(wb, fileName)
+        toast.success(`Downloaded top ${completedUsers.length} students ${target ? `from ${target}` : 'overall'}`)
     }
 
     const handleDeleteUser = async (id: string) => {
@@ -634,6 +683,42 @@ export default function AdminDashboard() {
                                                 </div>
                                             </button>
 
+                                            {/* Top Students Export */}
+                                            <div className="px-3 pt-2 pb-1 border-b border-gray-100 bg-slate-50/50">
+                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Top Students</p>
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <Input
+                                                        type="number"
+                                                        min={1}
+                                                        value={topN}
+                                                        onChange={(e) => setTopN(Number(e.target.value))}
+                                                        className="h-8 text-xs w-16 bg-white"
+                                                    />
+                                                    <span className="text-[11px] text-slate-500">Top students</span>
+                                                </div>
+                                                <div className="flex flex-col gap-1.5">
+                                                    <Button
+                                                        size="sm"
+                                                        onClick={() => handleExportTopStudents(exportCollege)}
+                                                        className="w-full bg-blue-600 hover:bg-blue-700 text-white h-8 text-xs font-medium"
+                                                    >
+                                                        <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5" />
+                                                        Top {topN} {exportCollege ? `(${exportCollege.split(' ')[0]}…)` : '(All)'}
+                                                    </Button>
+                                                    {exportCollege && (
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            onClick={() => handleExportTopStudents('')}
+                                                            className="w-full border-blue-200 text-blue-700 hover:bg-blue-50 h-8 text-xs font-medium mb-1"
+                                                        >
+                                                            <Users className="w-3.5 h-3.5 mr-1.5 text-blue-400" />
+                                                            Top {topN} (All Students)
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            </div>
+
                                             {/* Per-college list */}
                                             {uniqueColleges.length > 0 && (
                                                 <>
@@ -644,17 +729,26 @@ export default function AdminDashboard() {
                                                         {uniqueColleges.map((college: string) => {
                                                             const count = (data.users || []).filter((u: any) => (u.college || '').trim() === college).length
                                                             return (
-                                                                <button
-                                                                    key={college}
-                                                                    onClick={() => { setExportCollege(college); handleExport(college) }}
-                                                                    className="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 flex items-center justify-between gap-2 transition-colors"
-                                                                >
-                                                                    <span className="flex items-center gap-2 min-w-0">
-                                                                        <School className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                                                                        <span className="text-slate-700 truncate">{college}</span>
-                                                                    </span>
-                                                                    <span className="text-[11px] text-slate-400 shrink-0">{count} student{count !== 1 ? 's' : ''}</span>
-                                                                </button>
+                                                                <div key={college} className="group/row w-full flex items-center hover:bg-blue-50 transition-colors">
+                                                                    <button
+                                                                        onClick={() => { setExportCollege(college); handleExport(college) }}
+                                                                        className="flex-1 text-left px-3 py-2 text-sm flex items-center justify-between gap-2 min-w-0"
+                                                                    >
+                                                                        <span className="flex items-center gap-2 min-w-0">
+                                                                            <School className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                                                            <span className="text-slate-700 truncate">{college}</span>
+                                                                        </span>
+                                                                        <span className="text-[11px] text-slate-400 shrink-0 group-hover/row:hidden">{count} student{count !== 1 ? 's' : ''}</span>
+                                                                    </button>
+                                                                    <button 
+                                                                        onClick={(e) => { e.stopPropagation(); handleExportTopStudents(college) }}
+                                                                        className="hidden group-hover/row:flex px-2 py-2 text-blue-600 hover:text-blue-800 shrink-0 items-center gap-1 text-[10px] font-bold"
+                                                                        title={`Top ${topN} Students`}
+                                                                    >
+                                                                        <FileSpreadsheet className="w-3 h-3" />
+                                                                        TOP {topN}
+                                                                    </button>
+                                                                </div>
                                                             )
                                                         })}
                                                     </div>
@@ -705,6 +799,48 @@ export default function AdminDashboard() {
                                         })}
                                     </select>
                                 </div>
+
+                                {/* Top N Export Panel (only when college filtered) */}
+                                <AnimatePresence>
+                                    {exportCollege && (
+                                        <motion.div 
+                                            initial={{ opacity: 0, height: 0 }} 
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className="overflow-hidden"
+                                        >
+                                            <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
+                                                        <FileSpreadsheet className="w-5 h-5 text-blue-600" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-semibold text-slate-800">Export Top Students from {exportCollege}</p>
+                                                        <p className="text-xs text-slate-500">Enter a number and click download to get the highest scorers.</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex items-center gap-2 bg-white border border-blue-200 rounded-lg px-3 h-10">
+                                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Count</span>
+                                                        <input 
+                                                            type="number" 
+                                                            min={1} 
+                                                            value={topN} 
+                                                            onChange={(e) => setTopN(Number(e.target.value))}
+                                                            className="w-12 text-sm font-bold text-slate-700 outline-none bg-transparent"
+                                                        />
+                                                    </div>
+                                                    <Button 
+                                                        onClick={() => handleExportTopStudents(exportCollege)}
+                                                        className="bg-blue-600 hover:bg-blue-700 h-10 px-4 shadow-sm"
+                                                    >
+                                                        Download Top {topN}
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
 
                                 {/* Stats row: show filtered count */}
                                 <div className="flex items-center justify-between text-xs text-slate-400">

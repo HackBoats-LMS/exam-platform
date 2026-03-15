@@ -374,6 +374,7 @@ export async function upsertProfile(data: any) {
         section: data.section,
         rollNo: data.roll_no, // Map correctly
         year: data.year,
+        semester: data.semester,
         mobile: data.mobile,
         whatsapp: data.whatsapp,
         role: data.role
