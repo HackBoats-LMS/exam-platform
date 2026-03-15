@@ -12,6 +12,7 @@ const UserSchema = new mongoose.Schema({
     section: String,
     rollNo: String,
     year: String,
+    semester: String,
     mobile: String,
     whatsapp: String,
     createdAt: { type: Date, default: Date.now },

@@ -21,6 +21,7 @@ const schema = z.object({
     section: z.string().min(1, 'Please enter your section'),
     rollNo: z.string().min(1, 'Please enter your roll number'),
     year: z.string().min(1, 'Please select your year'),
+    semester: z.string().min(1, 'Please select your semester'),
     mobile: z.string().regex(/^\d{10}$/, 'Must be a valid 10-digit mobile number'),
     whatsapp: z.string().regex(/^\d{10}$/, 'Must be a valid 10-digit WhatsApp number'),
     email: z.string().email(),
@@ -98,6 +99,7 @@ export default function OnboardingPage() {
                 section: data.section,
                 roll_no: data.rollNo,
                 year: data.year,
+                semester: data.semester,
                 mobile: data.mobile,
                 whatsapp: data.whatsapp,
                 role: (session.user as any).role || 'student'
@@ -456,6 +458,21 @@ export default function OnboardingPage() {
                                                 <option value="4th">4th Year</option>
                                             </select>
                                             {errors.year && <p className="ob-error">{errors.year.message}</p>}
+                                        </div>
+                                        <div className="ob-field">
+                                            <label className="ob-label">Semester</label>
+                                            <select {...register('semester')} className="ob-input no-icon ob-select">
+                                                <option value="">Select semester</option>
+                                                <option value="1">1st Semester</option>
+                                                <option value="2">2nd Semester</option>
+                                                <option value="3">3rd Semester</option>
+                                                <option value="4">4th Semester</option>
+                                                <option value="5">5th Semester</option>
+                                                <option value="6">6th Semester</option>
+                                                <option value="7">7th Semester</option>
+                                                <option value="8">8th Semester</option>
+                                            </select>
+                                            {errors.semester && <p className="ob-error">{errors.semester.message}</p>}
                                         </div>
                                         <div className="ob-field ob-grid-span-2">
                                             <label className="ob-label">Section / Group</label>
