@@ -59,7 +59,7 @@ export default function ResultPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50">
+            <div className="min-h-screen flex items-center justify-center bg-[#050505]">
                 <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
             </div>
         )
@@ -79,25 +79,25 @@ export default function ResultPage() {
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
-                    background: #f8fafc;
+                    background: #030303;
                     position: relative;
                     overflow: hidden;
                     -webkit-font-smoothing: antialiased;
-                    color: #0f172a;
+                    color: #ffffff;
                 }
 
                 .rs-page::before {
                     content: ''; position: absolute; top: 50%; left: 50%;
                     transform: translate(-50%, -50%);
                     width: 700px; height: 700px; border-radius: 50%;
-                    background: radial-gradient(circle, rgba(249,115,22,0.06) 0%, rgba(249,115,22,0.02) 35%, transparent 70%);
+                    background: radial-gradient(circle, rgba(220,38,38,0.15) 0%, rgba(220,38,38,0.05) 35%, transparent 70%);
                     pointer-events: none; z-index: 0;
                 }
                 
                 .rs-page::after {
                     content: ''; position: absolute; top: -200px; right: -200px;
                     width: 500px; height: 500px; border-radius: 50%;
-                    background: radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 70%);
+                    background: radial-gradient(circle, rgba(220,38,38,0.05) 0%, transparent 70%);
                     pointer-events: none; z-index: 0;
                 }
 
@@ -116,19 +116,19 @@ export default function ResultPage() {
 
                 .rs-icon-box {
                     width: 72px; height: 72px;
-                    background: #ffffff;
-                    border: 1px solid rgba(0,0,0,0.05);
-                    color: #f97316;
+                    background: rgba(220,38,38,0.1);
+                    border: 1px solid rgba(220,38,38,0.2);
+                    color: #dc2626;
                     border-radius: 22px;
                     display: flex; align-items: center; justify-content: center;
                     margin-bottom: 2rem;
-                    box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
                 }
 
                 .rs-heading {
                     font-size: clamp(2rem, 5vw, 2.5rem);
                     font-weight: 900;
-                    color: #0f172a;
+                    color: #ffffff;
                     letter-spacing: -0.035em;
                     line-height: 1.1;
                     text-align: center;
@@ -136,63 +136,63 @@ export default function ResultPage() {
                 }
 
                 .rs-subtitle {
-                    color: #64748b;
+                    color: #9ca3af;
                     font-size: 1.1rem;
                     text-align: center;
                     margin-bottom: 3rem;
                     line-height: 1.5;
                 }
                 
-                .rs-subtitle strong { color: #334155; font-weight: 700; }
+                .rs-subtitle strong { color: #ffffff; font-weight: 700; }
 
                 .rs-info-card {
                     width: 100%;
                     display: flex; align-items: center; gap: 1.25rem;
                     padding: 1.5rem;
                     border-radius: 20px;
-                    background: #ffffff;
-                    border: 1px solid rgba(0,0,0,0.06);
+                    background: #0d0d12;
+                    border: 1px solid rgba(255,255,255,0.1);
                     margin-bottom: 1rem;
                     transition: all 0.3s ease;
-                    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
                 }
                 .rs-info-card:hover { 
-                    border-color: rgba(249,115,22,0.3); 
-                    background: rgba(249,115,22,0.02);
-                    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+                    border-color: rgba(220,38,38,0.4); 
+                    background: rgba(220,38,38,0.05);
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
                 }
 
                 .rs-info-icon-box {
                     width: 48px; height: 48px; border-radius: 14px;
-                    background: #f1f5f9;
+                    background: #15151a;
                     display: flex; align-items: center; justify-content: center;
                     flex-shrink: 0;
                 }
 
-                .rs-info-text h4 { font-size: 0.85rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
-                .rs-info-text p { font-size: 1.1rem; color: #334155; font-weight: 700; text-transform: capitalize; }
+                .rs-info-text h4 { font-size: 0.85rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
+                .rs-info-text p { font-size: 1.1rem; color: #e2e8f0; font-weight: 700; text-transform: capitalize; }
 
                 .rs-btn {
                     width: 100%; height: 58px;
                     display: flex; align-items: center; justify-content: center; gap: 10px;
                     border-radius: 16px;
-                    background: #0f172a;
+                    background: #dc2626;
                     color: #ffffff;
                     font-size: 16px; font-weight: 700;
                     border: none; cursor: pointer;
                     margin-top: 2.5rem;
-                    box-shadow: 0 0 0 1px rgba(0,0,0,0.08), 0 4px 20px rgba(15,23,42,0.2);
+                    box-shadow: 0 0 0 1px rgba(0,0,0,0.2), 0 4px 20px rgba(220,38,38,0.2);
                     transition: all 0.2s ease;
                 }
                 .rs-btn:hover {
                     transform: translateY(-2px);
-                    background: #1e293b;
-                    box-shadow: 0 0 0 1px rgba(0,0,0,0.1), 0 8px 30px rgba(15,23,42,0.3);
+                    background: #b91c1c;
+                    box-shadow: 0 0 0 1px rgba(0,0,0,0.3), 0 8px 30px rgba(220,38,38,0.3);
                 }
                 
                 .rs-footer {
                     position: fixed; bottom: 1.5rem;
-                    font-size: 11px; color: #94a3b8;
+                    font-size: 11px; color: #6b7280;
                     letter-spacing: 0.05em; font-weight: 600; font-family: monospace;
                     pointer-events: none;
                 }
@@ -213,7 +213,7 @@ export default function ResultPage() {
                     </div>
 
                     <h1 className="rs-heading">
-                        Assessment<br />Complete<span style={{ color: '#f97316' }}>.</span>
+                        Assessment<br />Complete<span style={{ color: '#dc2626' }}>.</span>
                     </h1>
 
                     <p className="rs-subtitle">
@@ -222,7 +222,7 @@ export default function ResultPage() {
                     </p>
 
                     <div className="rs-info-card" style={{ animationDelay: '0.1s' }}>
-                        <div className="rs-info-icon-box" style={{ color: '#3b82f6' }}>
+                        <div className="rs-info-icon-box" style={{ color: '#60a5fa' }}>
                             <Shield size={24} strokeWidth={2} />
                         </div>
                         <div className="rs-info-text">
@@ -232,7 +232,7 @@ export default function ResultPage() {
                     </div>
 
                     <div className="rs-info-card" style={{ animationDelay: '0.2s' }}>
-                        <div className="rs-info-icon-box" style={{ color: '#10b981' }}>
+                        <div className="rs-info-icon-box" style={{ color: '#34d399' }}>
                             <Clock size={24} strokeWidth={2} />
                         </div>
                         <div className="rs-info-text">

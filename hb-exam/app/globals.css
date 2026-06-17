@@ -15,34 +15,34 @@
 }
 
 :root {
-  /* Base - Clean White & Slate */
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
+  /* Base - Deep Black & White */
+  --background: 0 0% 1.2%;
+  --foreground: 0 0% 100%;
 
-  /* Card - Subtle separation */
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
+  /* Card - Subtle dark separation */
+  --card: 240 11% 9%;
+  --card-foreground: 0 0% 100%;
 
-  /* Primary - Professional Blue (Inter/Stripe like) */
-  --primary: 221.2 83.2% 53.3%;
-  --primary-foreground: 210 40% 98%;
+  /* Primary - Vivid Red */
+  --primary: 0 72% 51%;
+  --primary-foreground: 0 0% 100%;
 
-  /* Secondary - Neutral */
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
+  /* Secondary - Neutral Dark */
+  --secondary: 240 17% 4.7%;
+  --secondary-foreground: 0 0% 100%;
 
   /* Muted */
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
+  --muted: 240 5% 15%;
+  --muted-foreground: 215 16% 65%;
 
   /* Destructive */
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
 
   /* Border/Input */
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 221.2 83.2% 53.3%;
+  --border: 0 0% 15%;
+  --input: 0 0% 15%;
+  --ring: 0 72% 51%;
 
   --radius: 0.5rem;
 }

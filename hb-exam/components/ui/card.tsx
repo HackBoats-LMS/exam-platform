@@ -7,7 +7,7 @@ export const Card = forwardRef<HTMLDivElement, ComponentProps<'div'>>(
             <div
                 ref={ref}
                 className={twMerge(
-                    'rounded-xl border border-gray-100 bg-white shadow-lg shadow-gray-200/50 p-6',
+                    'rounded-xl border border-white/5 bg-[#0d0d12] shadow-lg shadow-gray-200/50 p-6',
                     className
                 )}
                 {...props}

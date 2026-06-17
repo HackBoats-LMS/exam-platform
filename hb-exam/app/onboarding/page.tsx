@@ -127,13 +127,14 @@ export default function OnboardingPage() {
 
                 html, body {
                     overflow-x: hidden;
+                    background-color: #030303;
                 }
                 
                 .ob-page {
                     font-family: 'Inter', system-ui, sans-serif;
                     min-height: 100dvh;
-                    background-color: #fbfbfd;
-                    color: #1d1d1f;
+                    background-color: #030303;
+                    color: #ffffff;
                     display: flex;
                     flex-direction: column;
                     align-items: center;
@@ -153,7 +154,7 @@ export default function OnboardingPage() {
                 .ob-glow {
                     position: absolute; top: -20%; left: 50%; transform: translateX(-50%);
                     width: 140vw; height: 100vh;
-                    background: radial-gradient(circle at 50% 0%, rgba(249,115,22,0.06) 0%, transparent 60%);
+                    background: radial-gradient(circle at 50% 0%, rgba(220, 38, 38, 0.15) 0%, transparent 60%);
                     z-index: 0; pointer-events: none;
                 }
 
@@ -170,8 +171,8 @@ export default function OnboardingPage() {
                 }
 
                 .ob-header { text-align: center; margin-bottom: 5rem; }
-                .ob-header h1 { font-size: clamp(2.5rem, 7vw, 4rem); font-weight: 900; letter-spacing: -0.05em; color: #1d1d1f; line-height: 1.05; margin-bottom: 1.25rem; }
-                .ob-header p { color: #86868b; font-size: 1.2rem; font-weight: 500; letter-spacing: -0.01em; }
+                .ob-header h1 { font-size: clamp(2.5rem, 7vw, 4rem); font-weight: 900; letter-spacing: -0.05em; color: #ffffff; line-height: 1.05; margin-bottom: 1.25rem; }
+                .ob-header p { color: #9ca3af; font-size: 1.2rem; font-weight: 500; letter-spacing: -0.01em; }
 
                 /* ── Floating Sections — No Card ── */
                 .ob-section {
@@ -184,9 +185,9 @@ export default function OnboardingPage() {
                 }
                 .ob-section-head::after {
                     content: ''; position: absolute; bottom: -1rem; left: 50%; translate: -50% 0;
-                    width: 40px; height: 3px; background: #f97316; border-radius: 99px;
+                    width: 40px; height: 3px; background: #dc2626; border-radius: 99px;
                 }
-                .ob-section-head h3 { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; color: #f97316; }
+                .ob-section-head h3 { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; color: #dc2626; }
 
                 .ob-grid { 
                     display: grid; 
@@ -208,51 +209,51 @@ export default function OnboardingPage() {
                     gap: 0.5rem; 
                     min-width: 0; 
                 }
-                .ob-label { font-size: 0.85rem; font-weight: 700; color: #1d1d1f; opacity: 0.6; padding-left: 0.25rem; }
+                .ob-label { font-size: 0.85rem; font-weight: 700; color: #d1d5db; padding-left: 0.25rem; }
 
                 .ob-input-wrapper { position: relative; width: 100%; min-width: 0; }
-                .ob-input-icon { position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: #86868b; opacity: 0.5; }
+                .ob-input-icon { position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: #6b7280; }
 
                 .ob-input {
                     width: 100%;
                     height: 58px;
-                    background-color: #fff;
-                    border: 1px solid #d2d2d7;
+                    background-color: #0d0d12;
+                    border: 1px solid rgba(255,255,255,0.1);
                     border-radius: 16px;
                     font-size: 1.05rem;
-                    color: #1d1d1f;
+                    color: #ffffff;
                     padding: 0 1.25rem 0 3.25rem;
                     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
                 }
                 .ob-input:focus {
-                    border-color: #f97316;
-                    box-shadow: 0 0 0 5px rgba(249,115,22,0.1);
+                    border-color: #dc2626;
+                    box-shadow: 0 0 0 5px rgba(220,38,38,0.1);
                     outline: none;
                 }
                 .ob-input.no-icon { padding-left: 1.25rem; }
-                .ob-input:read-only { background-color: #f5f5f7; cursor: not-allowed; border-color: #d2d2d7; color: #86868b; }
+                .ob-input:read-only { background-color: #15151a; cursor: not-allowed; border-color: rgba(255,255,255,0.05); color: #6b7280; }
 
                 .ob-select {
                     appearance: none;
-                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2386868b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
                     background-repeat: no-repeat;
                     background-position: right 1.25rem center;
                     background-size: 1.1rem;
                     cursor: pointer;
                 }
 
-                .ob-error { font-size: 0.75rem; color: #ff3b30; font-weight: 600; margin-top: 0.4rem; padding-left: 0.5rem; }
+                .ob-error { font-size: 0.75rem; color: #ef4444; font-weight: 600; margin-top: 0.4rem; padding-left: 0.5rem; }
 
                 .ob-check-row {
                     display: flex; align-items: center; justify-content: flex-end;
                     gap: 0.6rem; margin-bottom: 0.25rem;
                 }
-                .ob-check-label { font-size: 0.7rem; font-weight: 700; color: #86868b; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; }
+                .ob-check-label { font-size: 0.7rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; }
 
                 .ob-btn {
                     width: 100%; height: 68px;
-                    background-color: #000;
+                    background-color: #dc2626;
                     color: #ffffff;
                     border-radius: 20px;
                     font-size: 1.15rem; font-weight: 700;
@@ -260,9 +261,9 @@ export default function OnboardingPage() {
                     border: none; cursor: pointer;
                     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
                     margin-top: 2rem;
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                    box-shadow: 0 10px 30px rgba(220,38,38,0.2);
                 }
-                .ob-btn:hover { background-color: #1d1d1f; transform: scale(1.02); box-shadow: 0 15px 40px rgba(0,0,0,0.15); }
+                .ob-btn:hover { background-color: #b91c1c; transform: scale(1.02); box-shadow: 0 15px 40px rgba(220,38,38,0.3); }
                 .ob-btn:active { transform: scale(0.98); }
                 .ob-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
 
@@ -274,60 +275,60 @@ export default function OnboardingPage() {
                 }
                 .ob-brief-icon {
                     width: 72px; height: 72px;
-                    background: #fff;
-                    border: 1px solid #e2e8f0;
-                    color: #f97316;
+                    background: rgba(220,38,38,0.1);
+                    border: 1px solid rgba(220,38,38,0.2);
+                    color: #dc2626;
                     border-radius: 22px;
                     display: flex; align-items: center; justify-content: center;
                     margin: 0 auto 3rem;
-                    box-shadow: 0 8px 16px rgba(0,0,0,0.04);
+                    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
                 }
                 .ob-rule-card {
                     display: flex; align-items: center; gap: 2rem;
                     text-align: left; padding: 2.25rem;
                     border-radius: 24px;
-                    background: #ffffff;
-                    border: 1px solid #e2e8f0;
+                    background: #0d0d12;
+                    border: 1px solid rgba(255,255,255,0.1);
                     margin-bottom: 1.5rem;
                     transition: all 0.3s ease;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
                 }
                 @media (max-width: 600px) {
                     .ob-rule-card { padding: 1.25rem; gap: 1rem; }
                 }
-                .ob-rule-card:hover { transform: translateX(8px); border-color: #f9731644; box-shadow: 0 12px 24px rgba(0,0,0,0.04); }
+                .ob-rule-card:hover { transform: translateX(8px); border-color: rgba(220,38,38,0.4); box-shadow: 0 12px 24px rgba(0,0,0,0.3); }
                 
                 .ob-rule-icon-box {
                     width: 56px; height: 56px; border-radius: 16px;
                     display: flex; align-items: center; justify-content: center; flex-shrink: 0;
                 }
                 
-                .ob-rule-card h4 { font-size: 1.2rem; font-weight: 800; color: #1d1d1f; letter-spacing: -0.02em; margin-bottom: 0.35rem; }
-                .ob-rule-card p { font-size: 1rem; color: #86868b; line-height: 1.5; font-weight: 400; }
+                .ob-rule-card h4 { font-size: 1.2rem; font-weight: 800; color: #ffffff; letter-spacing: -0.02em; margin-bottom: 0.35rem; }
+                .ob-rule-card p { font-size: 1rem; color: #9ca3af; line-height: 1.5; font-weight: 400; }
 
                 .ob-start-btn {
-                    background-color: #f97316;
+                    background-color: #dc2626;
                     color: #fff; margin-top: 3.5rem;
                 }
-                .ob-start-btn:hover { background-color: #ea580c; box-shadow: 0 12px 30px rgba(234,88,12,0.3); }
+                .ob-start-btn:hover { background-color: #b91c1c; box-shadow: 0 12px 30px rgba(220,38,38,0.3); }
 
                 /* ── Badge ── */
                 .ob-badge {
                     display: inline-flex; align-items: center; gap: 8px;
-                    background: #fff; border: 1px solid #e2e8f0; border-radius: 99px;
+                    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 99px;
                     padding: 6px 16px 6px 12px; font-size: 11px; font-weight: 700;
-                    color: #86868b; text-transform: uppercase; letter-spacing: 0.1em;
+                    color: #9ca3af; text-transform: uppercase; letter-spacing: 0.1em;
                     margin-bottom: 2rem;
                 }
                 .ob-dot-pulse {
                     width: 7px; height: 7px; border-radius: 50%;
-                    background: #f97316;
+                    background: #dc2626;
                     animation: ob-pulse 2s infinite;
                 }
                 @keyframes ob-pulse {
-                    0% { box-shadow: 0 0 0 0 rgba(249,115,22,0.4); }
-                    70% { box-shadow: 0 0 0 10px rgba(249,115,22,0); }
-                    100% { box-shadow: 0 0 0 0 rgba(249,115,22,0); }
+                    0% { box-shadow: 0 0 0 0 rgba(220,38,38,0.4); }
+                    70% { box-shadow: 0 0 0 10px rgba(220,38,38,0); }
+                    100% { box-shadow: 0 0 0 0 rgba(220,38,38,0); }
                 }
             `}</style>
 
@@ -344,7 +345,7 @@ export default function OnboardingPage() {
                                     <div className="ob-dot-pulse" />
                                     Step 1: Onboarding
                                 </div>
-                                <h1>Tell us who<br />you are<span style={{ color: '#f97316' }}>.</span></h1>
+                                <h1>Tell us who<br />you are<span style={{ color: '#dc2626' }}>.</span></h1>
                                 <p>We need your academic profile to verify your identity and generate your assessment scorecard.</p>
                             </div>
 
@@ -392,7 +393,7 @@ export default function OnboardingPage() {
                                                     id="sameAsMobile"
                                                     checked={sameAsMobile}
                                                     onCheckedChange={(val) => setSameAsMobile(!!val)}
-                                                    className="w-3.5 h-3.5 border-slate-300"
+                                                    className="w-3.5 h-3.5 border-white/20"
                                                 />
                                                 <label htmlFor="sameAsMobile" className="ob-check-label">WhatsApp is same</label>
                                             </div>
@@ -485,7 +486,7 @@ export default function OnboardingPage() {
                                 <button type="submit" className="ob-btn" disabled={isLoading}>
                                     {isLoading ? <Loader2 size={24} className="sp-spin" /> : <>Continue to Briefing <Sparkles size={18} /></>}
                                 </button>
-                                <p style={{ textAlign: 'center', marginTop: '2rem', fontSize: '0.85rem', color: '#86868b' }}>
+                                <p style={{ textAlign: 'center', marginTop: '2rem', fontSize: '0.85rem', color: '#9ca3af' }}>
                                     Your information is kept secure and used only for internal benchmarking.
                                 </p>
                             </form>
@@ -495,11 +496,11 @@ export default function OnboardingPage() {
                             <div className="ob-brief-icon">
                                 <ShieldCheck size={36} strokeWidth={2.5} />
                             </div>
-                            <h2 style={{ fontSize: 'clamp(2.2rem, 7vw, 3.5rem)', fontWeight: 900, letterSpacing: '-0.05em', color: '#1d1d1f', marginBottom: '1rem', lineHeight: '1.1' }}>The Mission Briefing</h2>
-                            <p style={{ color: '#86868b', fontSize: 'clamp(1rem, 3.5vw, 1.25rem)', fontWeight: 500, marginBottom: '4rem' }}>Read carefully. There is no going back once you start.</p>
+                            <h2 style={{ fontSize: 'clamp(2.2rem, 7vw, 3.5rem)', fontWeight: 900, letterSpacing: '-0.05em', color: '#ffffff', marginBottom: '1rem', lineHeight: '1.1' }}>The Mission Briefing</h2>
+                            <p style={{ color: '#9ca3af', fontSize: 'clamp(1rem, 3.5vw, 1.25rem)', fontWeight: 500, marginBottom: '4rem' }}>Read carefully. There is no going back once you start.</p>
 
                             <div className="ob-rule-card">
-                                <div className="ob-rule-icon-box" style={{ background: '#f5f5f7', color: '#1d1d1f' }}>
+                                <div className="ob-rule-icon-box" style={{ background: '#15151a', color: '#ffffff' }}>
                                     <CheckCircle2 size={28} strokeWidth={2.5} />
                                 </div>
                                 <div style={{ flex: 1 }}>
@@ -509,7 +510,7 @@ export default function OnboardingPage() {
                             </div>
 
                             <div className="ob-rule-card">
-                                <div className="ob-rule-icon-box" style={{ background: '#fff1f1', color: '#ff3b30' }}>
+                                <div className="ob-rule-icon-box" style={{ background: 'rgba(220,38,38,0.1)', color: '#ef4444' }}>
                                     <AlertCircle size={28} strokeWidth={2.5} />
                                 </div>
                                 <div style={{ flex: 1 }}>
@@ -519,7 +520,7 @@ export default function OnboardingPage() {
                             </div>
 
                             <div className="ob-rule-card">
-                                <div className="ob-rule-icon-box" style={{ background: '#fffbeb', color: '#f59e0b' }}>
+                                <div className="ob-rule-icon-box" style={{ background: 'rgba(245,158,11,0.1)', color: '#f59e0b' }}>
                                     <Timer size={28} strokeWidth={2.5} />
                                 </div>
                                 <div style={{ flex: 1 }}>
@@ -531,7 +532,7 @@ export default function OnboardingPage() {
                             <button onClick={startExam} className="ob-btn ob-start-btn">
                                 Initiate Assessment <ArrowRight size={24} />
                             </button>
-                            <p style={{ marginTop: '3rem', fontSize: '0.9rem', color: '#86868b', fontWeight: 500 }}>
+                            <p style={{ marginTop: '3rem', fontSize: '0.9rem', color: '#9ca3af', fontWeight: 500 }}>
                                 By initiating, you consent to our proctoring protocols.
                             </p>
                         </div>
