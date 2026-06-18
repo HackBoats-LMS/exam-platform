@@ -10,9 +10,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ({ className, variant = 'primary', size = 'md', ...props }, ref) => {
         const variants = {
             primary: 'bg-sky-500 text-white hover:bg-sky-600 shadow-sm active:translate-y-[1px]',
-            secondary: 'bg-white text-gray-900 border border-gray-200 hover:bg-gray-50 shadow-sm active:translate-y-[1px]',
-            outline: 'bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-50 active:translate-y-[1px]',
-            ghost: 'bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900',
+            secondary: 'bg-[#0d0d12] text-white border border-white/10 hover:bg-white/5 shadow-sm active:translate-y-[1px]',
+            outline: 'bg-transparent border border-white/20 text-gray-200 hover:bg-white/5 active:translate-y-[1px]',
+            ghost: 'bg-transparent text-gray-300 hover:bg-[#15151a] hover:text-white',
             danger: 'bg-red-500 text-white hover:bg-red-600 shadow-sm active:translate-y-[1px]',
         }
 
