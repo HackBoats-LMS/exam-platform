@@ -7,8 +7,8 @@ import { Providers } from './providers'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'HackBoats Exam Platform',
-  description: 'Secure and efficient examination platform',
+  title: 'InternX Exam Platform',
+  description: 'InternX online examination and evaluation platform',
 }
 
 export default function RootLayout({
